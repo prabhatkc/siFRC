@@ -15,19 +15,19 @@ usage: main_frc.py [-h] [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
 Python FRC
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --input-dir 			input folder name with experimental images 
-  --output-dir 			output folder name that stores FRC plots (default: )
-  --io-plot 		    whether to display splitted images and its FRC
-                        (default: False)
-  --thres 		        threshold type to be used in the FRC (default: half-
-                        bit)
-  --crop                whether to pass input images as is or to crop before
-                        passing (default: False)
-  --frc-len 		    total length in x-y direction with center as frc_len/2
-                        (default: 400)
-  --frc-center 			new center of cropped image become
-                        (min(image.shape)/2) + frc-center (default: 0)
+  -h, --help         show this help message and exit
+  --input-dir 			 input folder name with experimental images 
+  --output-dir 			 output folder name that stores FRC plots (default: )
+  --io-plot 		     whether to display splitted images and its FRC
+                     (default: False)
+  --thres 		       threshold type to be used in the FRC (default: half-
+                     bit)
+  --crop             whether to pass input images as is or to crop before
+                     passing (default: False)
+  --frc-len 		     total length in x-y direction with center as frc_len/2
+                     (default: 400)
+  --frc-center 			 new center of cropped image become
+                     (min(image.shape)/2) + frc-center (default: 0)
 ```
 
 ## Example usage 
