@@ -32,4 +32,4 @@ optional arguments:
 
 ## Example usage 
 
-`python main_frc.py --input-dir './exp_images/std_data/' --output-dir 'sults/FRC_std_data/' --thres 'half-bit'`
+`python main_frc.py --input-dir './exp_images/std_data/' --output-dir 'results/FRC_std_data/' --thres 'half-bit'`
