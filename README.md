@@ -1,7 +1,4 @@
 # Understand Fourier Ring Correlation/Calculate Image resolution	
-# Copyright (C) Prabhat KC/Vincent							
-# All rights reserved. pkc@anl.gov   
-#                                                               
 
 (1) create demo images 
 python lena_noise_creation.py
