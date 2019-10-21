@@ -1,9 +1,8 @@
-# Understand Fourier Ring Correlation/Calculate Image resolution	
+# Understand the Fourier Ring Correlation (FRC) & Calculate Image resolution	
 
-(1) create demo images 
-python lena_noise_creation.py
+(1) create demo images: python lena_noise_creation.py
 
-(2) go through lenaFRC.ipynb
+(2) go through lenaFRC.ipynb to see the relation between the FRC and the SNR
 
 (3) Resolution calculation
 
