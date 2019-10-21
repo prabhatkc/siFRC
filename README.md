@@ -1,4 +1,3 @@
-#####################################################################
 # Understand Fourier Ring Correlation/Calculate Image resolution	
 # Copyright (C) Prabhat KC/Vincent							
 # All rights reserved. pkc@anl.gov   
@@ -11,7 +10,7 @@ python lena_noise_creation.py
 
 (3) Resolution calculation
 
-'''
+```
 usage: main_frc.py [-h] [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
                    [--io-plot IO_PLOT] [--thres THRES] [--crop]
                    [--frc-len FRC_LEN] [--frc-center FRC_CENTER]
@@ -32,7 +31,7 @@ optional arguments:
                         (default: 400)
   --frc-center 			new center of cropped image become
                         (min(image.shape)/2) + frc-center (default: 0)
-'''
+```
 
 ## Example usage 
 
