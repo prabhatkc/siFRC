@@ -17,8 +17,8 @@ Python FRC
 optional arguments:
   -h, --help         show this help message and exit
   --input-dir        input folder name with experimental images 
-  --output-dir 			 output folder name that stores FRC plots (default: )
-  --io-plot 		     whether to display splitted images and its FRC
+  --output-dir       output folder name that stores FRC plots (default: )
+  --io-plot          whether to display splitted images and its FRC
                      (default: False)
   --thres 		       threshold type to be used in the FRC (default: half-
                      bit)
