@@ -1,19 +1,17 @@
 #####################################################################
-# Understand Fourier Ring Correlation/Calculate Image resolution	#
-#                           										#
-#                                                               	#
-# Copyright (C) Prabhat KC/Vincent									#
-# All rights reserved. pkc@anl.gov                	        		#
-#                                                               	#
-#####################################################################
+# Understand Fourier Ring Correlation/Calculate Image resolution	
+# Copyright (C) Prabhat KC/Vincent							
+# All rights reserved. pkc@anl.gov   
+#                                                               
 
-
-# (1) create demo images 
+(1) create demo images 
 python lena_noise_creation.py
 
-# (2) go through lenaFRC.ipynb
+(2) go through lenaFRC.ipynb
 
-# (3) Resolution calculation
+(3) Resolution calculation
+
+'''
 usage: main_frc.py [-h] [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
                    [--io-plot IO_PLOT] [--thres THRES] [--crop]
                    [--frc-len FRC_LEN] [--frc-center FRC_CENTER]
@@ -34,6 +32,8 @@ optional arguments:
                         (default: 400)
   --frc-center 			new center of cropped image become
                         (min(image.shape)/2) + frc-center (default: 0)
+'''
 
 ## Example usage 
-python main_frc.py --input-dir './exp_images/std_data/' --output-dir 'sults/FRC_std_data/' --thres 'half-bit'
+
+`python main_frc.py --input-dir './exp_images/std_data/' --output-dir 'sults/FRC_std_data/' --thres 'half-bit'`
