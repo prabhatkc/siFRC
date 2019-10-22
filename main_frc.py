@@ -67,10 +67,10 @@ for i in range(len(img_names)):
 	if io_plot is True: su.multi2dplots(2, 2, all_splits, 0)
 
 	xc, corr1, xt, thres_val = frc_util.FRC(sa1, sa2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	_, corr2, _ , _          = frc_util.FRC(sa1, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	_, corr3, _, _ 			 = frc_util.FRC(sa1, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	_, corr4, _ , _          = frc_util.FRC(sa2, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	#_, corr5, _, _ 	     = frc_util.FRC(sa2, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
+	_, corr2, _, _           = frc_util.FRC(sa1, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
+	_, corr3, _, _           = frc_util.FRC(sa1, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
+	_, corr4, _, _           = frc_util.FRC(sa2, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
+	#_, corr5, _, _          = frc_util.FRC(sa2, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
 	#_, corr6, _ , _         = frc_util.FRC(sb1, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
 	corr_avg                 = (corr1+corr2+corr3+corr4)/4.0
 
