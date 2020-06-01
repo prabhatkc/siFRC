@@ -36,7 +36,7 @@ optional arguments:
 
 ## Example usage 
 
-`python main.py --input-dir './demo_images/noisy_lena_512/' --output-dir 'results/demo_images/noisy_lena_512' --thres 'half-bit`
+`python main.py --input-dir './demo_images/noisy_lena_512/' --output-dir 'results/demo_images/noisy_lena_512' --thres 'half-bit'`
 
 ## Final Resolution 
 
@@ -55,4 +55,4 @@ M. Van Heel and M. Schatz, “Fourier shell correlation threshold criteria,” J
 
 S. V. Koho, G. Tortarolo, M. Castello, T. Deguchi, A. Di- aspro, and G. Vicidomini, “Fourier ring correlation simplifies image restoration in fluorescence microscopy,” bioRxiv, p. 535583, 2019.
 
-HeLa (bio) image is retrieved from https://figshare.com/articles/Microtubules_stained_fixed_HeLa_cell/8159180/1
+
