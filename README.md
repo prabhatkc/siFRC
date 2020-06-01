@@ -1,13 +1,18 @@
-# Understand the Fourier Ring Correlation (FRC) & Calculate Image resolution	
+# SI-FRC 
+
+## Understand the Fourier Ring Correlation (FRC)
+## Calculate Image resolution from a Single Image	
 
 (1) create demo images: python lena_noise_creation.py
 
 (2) go through lenaFRC.ipynb to see the relation between the FRC and the SNR
 
-(3) Resolution calculation
+(3) calculate single image resolution 
+
+(4) compare siFRC value with that from FRC value deduced from two images using main_2imgs.py (if possible)
 
 ```
-usage: main_frc.py [-h] [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
+usage: main.py [-h] [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
                    [--io-plot IO_PLOT] [--thres THRES] [--crop]
                    [--frc-len FRC_LEN] [--frc-center FRC_CENTER]
 
@@ -31,4 +36,23 @@ optional arguments:
 
 ## Example usage 
 
-`python main_frc.py --input-dir './exp_images/std_data/' --output-dir 'results/FRC_std_data/' --thres 'half-bit'`
+`python main.py --input-dir './demo_images/noisy_lena_512/' --output-dir 'results/demo_images/noisy_lena_512' --thres 'half-bit`
+
+## Final Resolution 
+
+*************************************************************************
+==> if the intersection of the FRC curve and the threhold is (P) in x-axis
+==> and 1 pixel = q unit (may be [nm] or [um] or [cm])
+==> then the final resolution is (1/P)*q*sqrt(2) unit
+**************************************************************************
+## Package requirements
+
+numpy, matplotlib, glob, imageio, itertools, scipy
+
+## References
+
+M. Van Heel and M. Schatz, “Fourier shell correlation threshold criteria,” Journal of structural biology, vol. 151, no. 3, pp. 250–262, 2005.
+
+S. V. Koho, G. Tortarolo, M. Castello, T. Deguchi, A. Di- aspro, and G. Vicidomini, “Fourier ring correlation simplifies image restoration in fluorescence microscopy,” bioRxiv, p. 535583, 2019.
+
+HeLa (bio) image is retrieved from https://figshare.com/articles/Microtubules_stained_fixed_HeLa_cell/8159180/1

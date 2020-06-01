@@ -1,3 +1,6 @@
+
+# python main.py --input-dir './bio_images/' --output-dir 'results/bio_images' --thres 'em'
+# python main.py --input-dir './chip_images/siemens/' --output-dir 'results/seimens' --thres 'all'
 import sys
 import os 
 
@@ -33,6 +36,12 @@ output_dir = args.output_dir
 threshold  = args.thres
 crop 	   = args.crop
 
+#-------------------------------#
+# In built args
+# ------------------------------#
+args.smooth_boundry = False
+args.info_split     = True
+
 print('====> crop is:', crop)
 inside_square	= True
 anaRing			= True
@@ -47,7 +56,6 @@ if not os.path.isdir(output_dir):
   print("    ", output_dir)
   os.makedirs(output_dir)
 
-#img_dir = os.path.join(os.getcwd(), input_dir)
 img_names = sorted(glob.glob(os.path.join(input_dir, "*.*")))
 
 for i in range(len(img_names)):
@@ -63,38 +71,51 @@ for i in range(len(img_names)):
 	if io_plot is True: su.plot2dlayers(frc_img)
 
 	sa1, sa2, sb1, sb2 = frc_util.diagonal_split(frc_img)
+	if args.smooth_boundry:
+		sa1 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sa1))
+		sa2 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sa2))
+		sb1 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sb1))
+		sb2 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sb2))
 	all_splits = np.asanyarray([sa1, sa2, sb1, sb2])
+
 	if io_plot is True: su.multi2dplots(2, 2, all_splits, 0)
 
-	xc, corr1, xt, thres_val = frc_util.FRC(sa1, sa2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	_, corr2, _, _           = frc_util.FRC(sa1, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	_, corr3, _, _           = frc_util.FRC(sa1, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	_, corr4, _, _           = frc_util.FRC(sa2, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
+	xc, corr1, xt, thres_val = frc_util.FRC(sa1, sa2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing, info_split=args.info_split)
+	_, corr2, _, _           = frc_util.FRC(sb1, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing, info_split=args.info_split)
+	_, corr3, _, _           = frc_util.FRC(sa1, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing, info_split=args.info_split)
+	#_, corr4, _, _           = frc_util.FRC(sa2, sb1, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
 	#_, corr5, _, _          = frc_util.FRC(sa2, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
 	#_, corr6, _ , _         = frc_util.FRC(sb1, sb2, thresholding=threshold, inscribed_rings=inside_square, analytical_arc_based=anaRing)
-	corr_avg                 = (corr1+corr2+corr3+corr4)/4.0
-
+	corr_avg                 = (corr1+corr2+corr3)/3.0
+	#corr_avg 				= corr1
 	if threshold=='all':
-		plt.plot(xc[:-1], corr_avg[:-1], label = 'chip-FRC', color='black')
-		plt.plot(xt[:-1], (thres_val[0])[:-1], label='one-bit', color='green')
-		plt.plot(xt[:-1], (thres_val[1])[:-1], label='half-bit', color='red')
-		plt.plot(xt[:-1], (thres_val[2])[:-1], label='0.5 -Thres', color='brown')
-		plt.plot(xt[:-1], (thres_val[3])[:-1], label='EM', color='Orange')
+		plt.plot(xc[:-1]/2, corr_avg[:-1], label = 'chip-FRC', color='black')
+		plt.plot(xt[:-1]/2, (thres_val[0])[:-1], label='one-bit', color='green')
+		plt.plot(xt[:-1]/2, (thres_val[1])[:-1], label='half-bit', color='red')
+		plt.plot(xt[:-1]/2, (thres_val[2])[:-1], label='0.5 -Thres', color='brown')
+		plt.plot(xt[:-1]/2, (thres_val[3])[:-1], label='EM', color='Orange')
 	else:
-		plt.plot(xc[:-1], corr_avg[:-1], label = 'FRC', color='black')
-		plt.plot(xt[:-1], thres_val[:-1], label=threshold, color='red')
+		plt.plot(xc[:-1]/2, corr_avg[:-1], label = 'FRC', color='black')
+		plt.plot(xt[:-1]/2, thres_val[:-1], label=threshold, color='red')
 
-	plt.xlim(-0.01, 1.0)
+	plt.xlim(0.0, 0.5)
 	plt.ylim(0.0, 1)
 	plt.grid(linestyle='dotted', color='black', alpha=0.3) 
-	plt.xticks(np.arange(0, 1, step=0.1))
+	plt.xticks(np.arange(0.0, 0.5, step=0.03))
 	plt.yticks(np.arange(0, 1, step=0.1))
-	plt.legend(prop={'size':15})
-	plt.xlabel('Spatial Frequency/Nyquist', {'size':15})
-	plt.title ('Fourier Ring Correlation (FRC)', {'size':20})
-	plt.tick_params(axis='both', labelsize=14)
-	out_img_name = img_names[i].split('/')[3]
+	plt.legend(prop={'size':13})
+	plt.xlabel('Spatial Frequency (unit$^{-1}$)', {'size':13})
+	# plt.title ('Fourier Ring Correlation (FRC)', {'size':20})
+	plt.tick_params(axis='both', labelsize=7)
+	out_img_name = img_names[i].split('/')[-1]
 	out_img_name = ('./'+ output_dir + '/FRCof_'+ out_img_name.split('.')[0]+ '.pdf')
-	plt.savefig(out_img_name, dpi=300)
+	plt.savefig(out_img_name)
+	print(out_img_name)
 	if io_plot is True: plt.show()
 	plt.close()
+
+print('*************************************************************************')
+print('==> if the intersection of the FRC curve and the threhold is (P) in x-axis')
+print('==> and 1 pixel = q unit (may be [nm] or [um] or [cm])')
+print('==> then the final resolution is (1/P)*q*sqrt(2) unit')
+print('**************************************************************************')

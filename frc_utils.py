@@ -6,13 +6,13 @@
 # Based on the MATLAB code by Michael Wojcik
 # modification of python code by sajid
 #
-#
+
 
 import numpy as np
 import numpy.fft as fft
 import matplotlib.pyplot as plt 
 import itertools
-
+import sys
 
 def diagonal_split(x):
 
@@ -118,12 +118,12 @@ def ring_indices(x, inscribed_rings=True, plot=False):
     '''
     if dim == 2 :
         nr,nc = shape
-        nrdc = np.floor(nr/2)+1
-        ncdc = np.floor(nc/2)+1
-        r = np.arange(nr)-nrdc + 1
-        c = np.arange(nc)-ncdc + 1 
+        nrdc = np.floor(nr/2)
+        ncdc = np.floor(nc/2)
+        r = np.arange(nr)-nrdc 
+        c = np.arange(nc)-ncdc 
         [R,C] = np.meshgrid(r,c)
-        index = np.round(np.sqrt(R**2+C**2))+1    
+        index = np.round(np.sqrt(R**2+C**2))    
     
     elif dim == 3 :
         nr,nc,nz = shape
@@ -147,7 +147,7 @@ def ring_indices(x, inscribed_rings=True, plot=False):
     (i.e. FRC_r<=sqrt((L/2)^2 + (L/2)^2))
     '''
     if (inscribed_rings == True):
-        maxindex = nr/2+1
+        maxindex = nr/2
     else:
         maxindex = np.max(index)
     #output = np.zeros(int(maxindex),dtype = complex)
@@ -164,7 +164,7 @@ def ring_indices(x, inscribed_rings=True, plot=False):
     print('performed by index method')
     indices = []
     for i in np.arange(int(maxindex)):
-        indices.append(np.where(index == i+1))
+        indices.append(np.where(index == i))
 
     if plot is True:
         img_plane = np.zeros((nr, nc))
@@ -192,12 +192,14 @@ def spinavej(x, inscribed_rings=True):
     '''
     if dim == 2 :
         nr,nc = shape
-        nrdc = np.floor(nr/2)+1
-        ncdc = np.floor(nc/2)+1
-        r = np.arange(nr)-nrdc + 1
-        c = np.arange(nc)-ncdc + 1 
+        nrdc = np.floor(nr/2)
+        ncdc = np.floor(nc/2)
+        r = np.arange(nr)-nrdc 
+        c = np.arange(nc)-ncdc  
         [R,C] = np.meshgrid(r,c)
-        index = np.round(np.sqrt(R**2+C**2))+1    
+        index = np.round(np.sqrt(R**2+C**2))
+        indexf = np.floor(np.sqrt(R**2+C**2))
+        indexC = np.ceil(np.sqrt(R**2+C**2))
     
     elif dim == 3 :
         nr,nc,nz = shape
@@ -217,12 +219,12 @@ def spinavej(x, inscribed_rings=True):
     '''
 
     if (inscribed_rings == True):
-        maxindex = nr/2+1
+        maxindex = nr/2
     else:
         maxindex = np.max(index)
     output = np.zeros(int(maxindex),dtype = complex)
     
-    ''' In the next step the output is generated. The output is an array of length
+    ''' In the next step output is generated. The output is an array of length
     maxindex. The elements in this array corresponds to the sum of all the elements
     in the original array correponding to the integer position of the output array 
     divided by the number of elements in the index array with the same value as the
@@ -233,14 +235,18 @@ def spinavej(x, inscribed_rings=True):
     '''
     print('performed by index method')
     indices = []
+    indicesf, indicesC = [], []
     for i in np.arange(int(maxindex)):
-        indices.append(np.where(index == i+1))
+        #indices.append(np.where(index == i+1))
+        indicesf.append(np.where(indexf == i))
+        indicesC.append(np.where(indexC == i))
+
     for i in np.arange(int(maxindex)):
-        output[i] = sum(x[indices[i]])/len(indices[i][0])
+        #output[i] = sum(x[indices[i]])/len(indices[i][0])
+        output[i] = (sum(x[indicesf[i]])+sum(x[indicesC[i]]))/2
     return output
 
-
-def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_based=True):
+def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_based=True, info_split=True):
     
     ''' Check whether the dimensions of input image is 
     square or not
@@ -259,17 +265,17 @@ def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_b
     '''
     I1 = fft.fftshift(fft.fft2(i1))
     I2 = fft.fftshift(fft.fft2(i2))
-    C  = spinavej(np.multiply(I1,np.conj(I2)), inscribed_rings=inscribed_rings)
-    C1 = spinavej(np.multiply(I1,np.conj(I1)), inscribed_rings=inscribed_rings)
-    C2 = spinavej(np.multiply(I2,np.conj(I2)), inscribed_rings=inscribed_rings)
-    
-    C  = C.astype(np.float64)
-    C1 = C1.astype(np.float64)
-    C2 = C2.astype(np.float64)
-    FSC    = abs(C)/np.sqrt(abs(np.multiply(C1,C2)))
+    C  = spinavej(I1*np.conjugate(I2), inscribed_rings=inscribed_rings)
+    C = np.real(C)
+    C1 = spinavej(np.abs(I1)**2, inscribed_rings=inscribed_rings)
+    C2 = spinavej(np.abs(I2)**2, inscribed_rings=inscribed_rings)
+    C  = C.astype(np.float32)
+    C1 = np.real(C1).astype(np.float32)
+    C2 = np.real(C2).astype(np.float32)
+    FSC    = abs(C)/np.sqrt(C1*C2)
     x_fsc  = np.arange(np.shape(C)[0])/(np.shape(i1)[0]/2)
    
-    ring_plots=True
+    ring_plots=False
     if(inscribed_rings==True):
       ''' for rings with max radius 
       as L/2
@@ -278,7 +284,7 @@ def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_b
         ''' perimeter of circle based calculation to
         determine n in each ring
         '''
-        r      = np.arange(1+np.shape(i1)[0]/2) # array (0:1:L/2)
+        r      = np.arange(np.shape(i1)[0]/2) # array (0:1:L/2-1)
         n      = 2*np.pi*r # perimeter of r's from above
         n[0]   = 1
         eps    = np.finfo(float).eps
@@ -289,7 +295,7 @@ def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_b
         ''' no. of pixels along the border of each circle 
         is used to determine n in each ring
         '''
-        indices = ri.ring_indices( i1, inscribed_rings=True, plot=ring_plots)
+        indices = ring_indices( i1, inscribed_rings=True, plot=ring_plots)
         N_ind = len(indices)  
         n = np.zeros(N_ind) 
         for i in range(N_ind):
@@ -310,7 +316,7 @@ def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_b
         inv_sqrt_n = np.divide(np.ones(np.shape(n)),np.sqrt(n)) # 1/sqrt(n)
         x_T    = r/(np.shape(i1)[0]/2)
       else:
-        indices = ri.ring_indices( i1, inscribed_rings=False, plot=ring_plots)
+        indices = ring_indices( i1, inscribed_rings=False, plot=ring_plots)
         N_ind = len(indices)  
         n = np.zeros(N_ind) 
         for i in range(N_ind):
@@ -318,35 +324,34 @@ def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_b
         inv_sqrt_n = np.divide(np.ones(np.shape(n)),np.sqrt(n)) # 1/sqrt(n)
         x_T = np.arange(N_ind)/(np.shape(i1)[0]/2)
 
-    if (thresholding == 'one-bit'):
-        #1-bit thresholding
-        print("[*] Performing one-bit thresholding") 
-        # T = (0.5+2.4142*inv_sqrt_n)/(1.5+1.4142*inv_sqrt_n) #information split
-        T = (1+3*inv_sqrt_n)/(2+2*inv_sqrt_n) # pixel split
-    elif(thresholding == 'half-bit'):
-        # 1/2-bit thresholding
-        print("[*] Performing half-bit thresholding")
-        #T = (0.2071+1.9102*inv_sqrt_n)/(1.2071+1.9102*inv_sqrt_n) # information split into 2 
-        T = (0.4142+2.287*inv_sqrt_n)/ (1.4142+1.287*inv_sqrt_n) # pixel split 
-    elif(thresholding == '0.5'):    
-        # half-thresholding
-        print("[*] Performing constant 0.5 thresholding") 
-        T = 0.5*np.ones(np.shape(n))
-    elif(thresholding=='em'):    
-        # em-thresholding
-        print("[*] Performing EM thresholding") 
-        T = 0.1716*np.ones(np.shape(n))
-    else:
-        # output all the thresholds
-        #pixel split
-        t1 = (1+3*inv_sqrt_n)/(2+2*inv_sqrt_n)
-        t2 = (0.4142+2.287*inv_sqrt_n)/ (1.4142+1.287*inv_sqrt_n) 
-        #information split
-        #t1 = (0.5+2.4142*inv_sqrt_n)/(1.5+1.4142*inv_sqrt_n)
-	      #t2 = (0.2071+1.9102*inv_sqrt_n)/(1.2071+1.9102*inv_sqrt_n) # information split twice 
+
+    if info_split:
+      ''' Thresholding based on the fact that 
+      SNR is split as the data is divided into
+      two half datasets
+      '''
+      if (thresholding  == 'one-bit'):  T = (0.5+2.4142*inv_sqrt_n)/(1.5+1.4142*inv_sqrt_n) #information split
+      elif(thresholding == 'half-bit'): T = (0.4142+2.287*inv_sqrt_n)/ (1.4142+1.287*inv_sqrt_n) # diagonal split 
+      elif(thresholding == '0.5'):      T = 0.5*np.ones(np.shape(n))
+      elif(thresholding =='em'):        T = (1/7)*np.ones(np.shape(n))
+      else:
+        t1 = (0.5+2.4142*inv_sqrt_n)/(1.5+1.4142*inv_sqrt_n)
+        t2 = (0.2071+1.9102*inv_sqrt_n)/(1.2071+0.9102*inv_sqrt_n) # information split twice 
         t3 = 0.5*np.ones(np.shape(n))
-        t4 = 0.1716*np.ones(np.shape(n))
+        t4 = (1/7)*np.ones(np.shape(n))
         T = [t1, t2, t3, t4]
+    else:  
+      if (thresholding == 'one-bit'):  T = (1+3*inv_sqrt_n)/(2+2*inv_sqrt_n) # pixel split
+      elif(thresholding == 'half-bit'):T = (0.4142+2.287*inv_sqrt_n)/ (1.4142+1.287*inv_sqrt_n) # diagonal split 
+      elif(thresholding == '0.5'):     T = 0.5*np.ones(np.shape(n))
+      elif(thresholding=='em'):        T = (1/7)*np.ones(np.shape(n))
+      else:
+          t1 = (1+3*inv_sqrt_n)/(2+2*inv_sqrt_n)
+          t2 = (0.4142+2.287*inv_sqrt_n)/ (1.4142+1.287*inv_sqrt_n) 
+          t3 = 0.5*np.ones(np.shape(n))
+          t5 = (1/7)*np.ones(np.shape(n))
+          T = [t1, t2, t3, t4]
+
     return (x_fsc, FSC, x_T, T)
 
 def frc_4rm_snr(indices, signal, noise):
@@ -364,3 +369,13 @@ def frc_4rm_snr(indices, signal, noise):
     return(np.asarray(snrFSC))
 
 
+def apply_hanning_2d(img):
+  ''' used for experimental images to minimize 
+  boundry effects
+  '''
+  hann_filt = np.hanning(img.shape[0])
+  hann_filt = hann_filt.reshape(img.shape[0], 1)
+  #hann_filt = np.power(hann_filt, 2)
+  hann_img = img*hann_filt
+  hann_img = hann_img*np.transpose(hann_img)
+  return(hann_img)
