@@ -14,73 +14,38 @@ import matplotlib.pyplot as plt
 import itertools
 import sys
 
-def diagonal_split(x):
+def diagonal_split(img):
+    '''
+    This function takes an input image and splits it diagonally into four sub-regions.
+    The input image must have dimensions that are divisible by 4.
+    '''
+    # Get the shape of the input image
+    h, w = img.shape
+    # Check that the image has dimensions divisible by 4
+    if (h % 4 != 0) or (w % 4 != 0):
+        raise ValueError('Input image must have dimensions divisible by 4')
+    # Crop the image to make sure the dimensions are divisible by 4
+    img = img[:h//4*4, :w//4*4]
+    h, w = img.shape
+    # Create indices for the rows and columns
+    row_indices = np.arange(h)
+    col_indices = np.arange(w)
 
-  ''' pre-processing steps interms of
-  cropping to enable the diagonal 
-  splitting of the input image
-  '''
+    # Split the indices into two groups, one for each diagonal split
+    row_split_u = row_indices[::2]
+    row_split_d = row_indices[1::2]
 
-  h, w = x.shape
-  cp_x = x 
-  ''' cropping the rows '''
-  if  (np.mod(h, 4)==1):
-    cp_x = cp_x[:-1]
-  elif(np.mod(h, 4)==2):
-    cp_x = cp_x[1:-1]
-  elif(np.mod(h, 4)==3):
-    cp_x = cp_x[1:-2]
-    
-  ''' cropping the columns'''
-  if  (np.mod(w, 4)==1):
-    cp_x = cp_x[:, :-1]
-  elif(np.mod(w, 4)==2):
-    cp_x = cp_x[:,1:-1]
-  elif(np.mod(w, 4)==3):
-    cp_x = cp_x[:, 1:-2]
+    col_split_l = col_indices[::2]
+    col_split_r = col_indices[1::2]
 
+    # Split the image into four sub-regions using advanced indexing
+    sub_a1 = img[np.ix_(row_split_u, col_split_l)]
+    sub_a2 = img[np.ix_(row_split_d, col_split_r)]
+    sub_b1 = img[np.ix_(row_split_d, col_split_l)]
+    sub_b2 = img[np.ix_(row_split_u, col_split_r)]
 
-  x = cp_x
-  h, w = x.shape
-  if((np.mod(h, 4)!=0) or (np.mod(w, 4)!=0)):
-    print('[!] diagonal splitting not possible due to cropping issue')
-    print('[!] re-check the cropping portion')
-    end()
-
-  row_indices = np.arange(0, h)
-  col_indices = np.arange(0, w)
-
-  row_split_u = row_indices[::2]
-  row_split_d  = np.asanyarray(list(set(row_indices)-set(row_split_u)))
-
-  col_split_l = col_indices[::2]
-  col_split_r = np.asanyarray(list(set(col_indices)-set(col_split_l)))
-
-  ''' ordered pair of pre-processing
-  of the diagonal elements 
-  and sub-sequent splits of the image
-  '''
-  op1  = list(itertools.product(row_split_u, col_split_l))
-  ind  = [np.asanyarray([fo for fo, _ in op1]), np.asanyarray([so for _, so in op1])]
-  s_a1 = x[ind]
-  s_a1 = s_a1.reshape((len(row_split_u), len(col_split_l)))
-  
-  op2  = list(itertools.product(row_split_d, col_split_r))
-  ind  = [np.asanyarray([fo for fo, _ in op2]), np.asanyarray([so for _, so in op2])]
-  s_a2 = x[ind]
-  s_a2 = s_a2.reshape((len(row_split_d), len(col_split_r)))
-  
-  op3  = list(itertools.product(row_split_d, col_split_l))
-  ind  = [np.asanyarray([fo for fo, _ in op3]), np.asanyarray([so for _, so in op3])]
-  s_b1 = x[ind]
-  s_b1 = s_b1.reshape((len(row_split_d), len(col_split_l)))
-
-  op4  = list(itertools.product(row_split_u, col_split_r))
-  ind  = [np.asanyarray([fo for fo, _ in op4]), np.asanyarray([so for _, so in op4])]
-  s_b2 = x[ind]
-  s_b2 = s_b2.reshape((len(row_split_u), len(col_split_r)))
-
-  return(s_a1, s_a2, s_b1, s_b2)
+    # Return the four sub-regions
+    return sub_a1, sub_a2, sub_b1, sub_b2
 
 def get_frc_img(img, frc_img_lx, center=None):
   ''' Returns a cropped image version of input image "img"
