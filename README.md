@@ -1,15 +1,14 @@
-# SI-FRC 
+# siFRC 
 
-## Understand the Fourier Ring Correlation (FRC)
-## Calculate Image resolution from a Single Image	
+## Highlights
+(1) This implementation helps to understand Fourier Ring Correlation (FRC).
+(2) It allows one to calculate FRC-based image resolution from a Single Image.
 
-(1) create demo images: python lena_noise_creation.py
-
-(2) go through lenaFRC.ipynb to see the relation between the FRC and the SNR
-
-(3) calculate single image resolution 
-
-(4) compare siFRC value with that from FRC value deduced from two images using main_2imgs.py (if possible)
+## Additional guide
+(1) Create demo images: python lena_noise_creation.py.
+(2) Go through lenaFRC.ipynb to see the relation between the FRC and the SNR.
+(3) Calculate single image resolution using demo images.
+(4) Compare FRC value obtained from single image (siFRC) against that obtained from two images using main_2imgs.py.
 
 ```
 usage: main.py [-h] [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
@@ -41,9 +40,11 @@ optional arguments:
 ## Final Resolution 
 
 *************************************************************************
+```
 ==> if the intersection of the FRC curve and the threhold is (P) in x-axis
 ==> and 1 pixel = q unit (may be [nm] or [um] or [cm])
 ==> then the final resolution is (1/P)*q*sqrt(2) unit
+```
 **************************************************************************
 ## Package requirements
 
