@@ -173,9 +173,11 @@ def spinavej(x, inscribed_rings=True):
         nzdc = np.floor(nz/2)+1
         r = np.arange(nr)-nrdc + 1
         c = np.arange(nc)-ncdc + 1 
-        z = np.arange(nc)-nzdc + 1 
+        z = np.arange(nz)-nzdc + 1 
         [R,C,Z] = np.meshgrid(r,c,z)
-        index = np.round(np.sqrt(R**2+C**2+Z**2))+1    
+        index = np.round(np.sqrt(R**2+C**2+Z**2))
+        indexf = np.floor(np.sqrt(R**2+C**2+Z**2))
+        indexC = np.ceil(np.sqrt(R**2+C**2+Z**2))   
     else :
         print('input is neither a 2d or 3d array')
     '''
@@ -199,7 +201,7 @@ def spinavej(x, inscribed_rings=True):
     By-pixel method for large arrays and by-index method for smaller ones.
     '''
     print('performed by index method')
-    indices = []
+    # indices = []
     indicesf, indicesC = [], []
     for i in np.arange(int(maxindex)):
         #indices.append(np.where(index == i+1))
