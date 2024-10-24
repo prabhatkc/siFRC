@@ -1,6 +1,6 @@
 
 # python main.py --input-dir './bio_images/' --output-dir 'results/bio_images' --thres 'em'
-# python main.py --input-dir './chip_images/siemens/' --output-dir 'results/seimens' --thres 'all'
+# python main.py --input-dir './chip_images/siemens/' --output-dir 'results/seimens2' --thres 'all' --crop --frc-len 1200
 import sys
 import os 
 

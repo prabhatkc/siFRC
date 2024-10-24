@@ -316,7 +316,7 @@ def FRC( i1, i2, thresholding='half-bit', inscribed_rings=True, analytical_arc_b
           t1 = (1+3*inv_sqrt_n)/(2+2*inv_sqrt_n)
           t2 = (0.4142+2.287*inv_sqrt_n)/ (1.4142+1.287*inv_sqrt_n) 
           t3 = 0.5*np.ones(np.shape(n))
-          t5 = (1/7)*np.ones(np.shape(n))
+          t4 = (1/7)*np.ones(np.shape(n))
           T = [t1, t2, t3, t4]
 
     return (x_fsc, FSC, x_T, T)
