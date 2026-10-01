@@ -10,14 +10,27 @@ import matplotlib.pyplot as plt
 
 inside_square	= True
 anaRing			= True
-threshold ='all'
+threshold 		='all'
 
 img1 = su.imageio_imread('chip_images/siemens/Siemens_star_60nm_16nmZP_8keV_det2sple_3400mm_10s_1.tif')
 img2 = su.imageio_imread('chip_images/siemens/Siemens_star_60nm_16nmZP_8keV_det2sple_3400mm_10s_2.tif')
+#img2 = su.imageio_imread('chip_images/siemens/Siemens_star_60nm_16nmZP_8keV_det2sple_3400mm_10s_1-5deg_rot.tif') # it will correctly yield poor 2 image-based FRC due to phase mis-match
 
-img1 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, img1))
-img2 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, img2))
-output_dir ='results/siemens/'
+h, w 		      = img1.shape
+crop_img_len      = 1200 #int(h/2)
+frc_center_offset = 0
+
+crop_img1 = frc_util.get_frc_img(img1, crop_img_len, frc_center_offset)
+crop_img2 = frc_util.get_frc_img(img2, crop_img_len, frc_center_offset)
+
+img1 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, crop_img1))
+img2 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, crop_img2))
+
+#print(np.sum(img1), np.sum(img3))
+su.plot2dlayers(img1)
+su.plot2dlayers(img2)
+
+output_dir ='results/siemens_hannT/'
 if not os.path.isdir(output_dir):
   print("===> creating the directory to store results from FRC calculations as: ")
   print("    ", output_dir)
@@ -47,4 +60,4 @@ out_img_name = output_dir.split('/')[-1]
 out_img_name = ('./'+ output_dir + '/FRCof_'+ out_img_name.split('.')[0]+ '4rm_2imgs.pdf')
 plt.savefig(out_img_name)
 #if io_plot is True: plt.show()
-#plt.close()
+plt.close()
