@@ -1,6 +1,7 @@
 
 # python main.py --input-dir './bio_images/' --output-dir 'results/bio_images' --thres 'em'
-# python main.py --input-dir './chip_images/siemens/' --output-dir 'results/seimens2' --thres 'all' --crop --frc-len 1200
+# python main.py --input-dir './chip_images/siemens/' --output-dir 'results/siemens_hannT' --thres 'all' --crop --frc-len 1200 --apply-hann
+# python main.py --input-dir './chip_images/siemens/' --output-dir 'results/siemens_hannF' --thres 'all' --crop --frc-len 1200
 import sys
 import os 
 
@@ -26,30 +27,32 @@ parser.add_argument('--crop', action='store_true',
 					help='whether to pass input images as is or to crop before passing')
 parser.add_argument('--frc-len', default=400, type=int,
 					help='total length in x-y direction with center as frc_len/2')
-parser.add_argument('--frc-center', default=0, type=int,
-					help='new center of cropped image become (min(image.shape)/2) + frc-center')
+parser.add_argument('--frc-center-offset', default=0, type=int,
+					help='new center of cropped image become (min(image.shape)/2) + frc-center-offset')
+parser.add_argument('--apply-hann', action='store_true',
+					help='apply hanning filter to supress edge effects.')
 
-args       = parser.parse_args()
-io_plot    = args.io_plot
-input_dir  = args.input_dir
-output_dir = args.output_dir
-threshold  = args.thres
-crop 	   = args.crop
-
+args           = parser.parse_args()
+io_plot        = args.io_plot
+input_dir      = args.input_dir
+output_dir     = args.output_dir
+threshold      = args.thres
+crop 	       = args.crop
+smooth_boundry = args.apply_hann
 #-------------------------------#
 # In built args
 # ------------------------------#
-args.smooth_boundry = False
+
 args.info_split     = True
 
 print('====> crop is:', crop)
-inside_square	= True
+inside_square	= True # i.e. the max radius of rings is <= image_length/2
 anaRing			= True
 
 if crop is True:
 	#total length in x-y direction with center as (frc_len+frc_center)/2
-	frc_len    = args.frc_len
-	frc_center = args.frc_center
+	frc_len           = args.frc_len
+	frc_center_offset = args.frc_center_offset
 
 if not os.path.isdir(output_dir):
   print("===> creating the directory to store results from FRC calculations as: ")
@@ -64,14 +67,14 @@ for i in range(len(img_names)):
 	img = img.astype(np.float)
 	img = su.normalize_data_ab(0, 1, img)
 	if crop is True:
-		frc_img = frc_util.get_frc_img(img, frc_len, frc_center)
+		frc_img = frc_util.get_frc_img(img, frc_len, frc_center_offset)
 	else:
 		frc_img = img
 
 	if io_plot is True: su.plot2dlayers(frc_img)
 
 	sa1, sa2, sb1, sb2 = frc_util.diagonal_split(frc_img)
-	if args.smooth_boundry:
+	if smooth_boundry:
 		sa1 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sa1))
 		sa2 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sa2))
 		sb1 = frc_util.apply_hanning_2d(su.normalize_data_ab(0, 1, sb1))
