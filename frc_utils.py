@@ -335,7 +335,7 @@ def frc_4rm_snr(indices, signal, noise):
       snrFSC.append(each_snrFSC)
     return(np.asarray(snrFSC))
 
-
+"""
 def apply_hanning_2d(img):
   ''' used for experimental images to minimize 
   boundry effects
@@ -346,3 +346,11 @@ def apply_hanning_2d(img):
   hann_img = img*hann_filt
   hann_img = hann_img*np.transpose(hann_img)
   return(hann_img)
+"""
+
+def apply_hanning_2d(img: np.ndarray) -> np.ndarray:
+    wy = np.hanning(img.shape[0])
+    wx = np.hanning(img.shape[1])
+    return img * np.outer(wy, wx)
+
+
